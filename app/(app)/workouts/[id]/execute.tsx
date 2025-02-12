@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
-import { styles } from "../../../styles";
-import { Workout, ExerciseInProgress } from "../../../types";
-import { RestTimer } from "../../../components/RestTimer";
-import { ExerciseProgress } from "../../../components/ExerciseProgress";
+import { styles } from "../../../../styles";
+import { Workout, ExerciseInProgress } from "../../../../types";
+import { RestTimer } from "../../../../components/RestTimer";
+import { ExerciseProgress } from "../../../../components/ExerciseProgress";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function ExecuteWorkoutScreen() {
@@ -12,11 +12,11 @@ export default function ExecuteWorkoutScreen() {
 
   // Información dummy predefinida
   const workout: Workout = {
-    id: "1",
+    _id: "1",
     name: "Rutina de Ejemplo",
     exercises: [
       {
-        id: "1",
+        _id: "1",
         name: "Press de Banca",
         muscleGroup: "Pecho",
         totalSets: 4,
@@ -24,7 +24,7 @@ export default function ExecuteWorkoutScreen() {
         weight: 60,
       },
       {
-        id: "2",
+        _id: "2",
         name: "Aperturas",
         muscleGroup: "Pecho",
         totalSets: 3,

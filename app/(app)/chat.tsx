@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 const initialMessages: ChatMessage[] = [
   {
-    id: "1",
+    _id: "1",
     text: "¡Hola! Soy tu asistente de fitness. ¿En qué puedo ayudarte hoy?",
     sender: "ai",
     timestamp: new Date().toISOString(),
@@ -27,7 +27,7 @@ export default function ChatScreen() {
     if (!inputText.trim()) return;
 
     const newMessage: ChatMessage = {
-      id: Date.now().toString(),
+      _id: Date.now().toString(),
       text: inputText.trim(),
       sender: "user",
       timestamp: new Date().toISOString(),
@@ -39,7 +39,7 @@ export default function ChatScreen() {
     // Simular respuesta de la IA
     setTimeout(() => {
       const aiResponse: ChatMessage = {
-        id: Date.now().toString(),
+        _id: Date.now().toString(),
         text: "Esta es una respuesta simulada de la IA. Aquí iría la integración real con el backend.",
         sender: "ai",
         timestamp: new Date().toISOString(),
@@ -71,7 +71,7 @@ export default function ChatScreen() {
             </Text>
           </View>
         )}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         contentContainerStyle={styles.messageList}
       />
 

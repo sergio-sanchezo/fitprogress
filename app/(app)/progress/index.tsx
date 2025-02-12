@@ -7,7 +7,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 const sampleImages: ProgressImage[] = [
   {
-    id: "1",
+    _id: "1",
     imageUrl: "https://placeholder.com/400x600",
     date: new Date().toISOString(),
     type: "front",
@@ -41,7 +41,7 @@ export default function ProgressScreen() {
       {/* Galería de fotos */}
       <View style={styles.photoGrid}>
         {sampleImages.map((image) => (
-          <View key={image.id} style={styles.photoCard}>
+          <View key={image._id} style={styles.photoCard}>
             <Image
               source={{ uri: image.imageUrl }}
               style={styles.photo}

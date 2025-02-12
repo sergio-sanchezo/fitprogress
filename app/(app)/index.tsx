@@ -5,18 +5,19 @@ import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WorkoutCard } from "../../components/WorkoutCard";
 import { styles } from "./../../styles";
+import { Workout } from "@/types";
 
 // Datos de ejemplo para la demo
 // Datos de ejemplo
-function generateSampleWorkouts(n: number) {
+function generateSampleWorkouts(n: number): Workout[] {
   const workouts = [];
   for (let i = 1; i <= n; i++) {
     workouts.push({
-      id: i.toString(),
+      _id: i.toString(),
       name: `Rutina ${i}`,
       exercises: [
         {
-          id: "1",
+          _id: "1",
           name: "Ejercicio 1",
           muscleGroup: "Grupo Muscular",
           totalSets: 4,
@@ -24,7 +25,7 @@ function generateSampleWorkouts(n: number) {
           weight: 60,
         },
         {
-          id: "2",
+          _id: "2",
           name: "Ejercicio 2",
           muscleGroup: "Grupo Muscular",
           totalSets: 3,
@@ -81,12 +82,12 @@ export default function HomeScreen() {
           <View style={styles.bentoGrid}>
             {sampleWorkouts.slice(0, 6).map((workout) => (
               <WorkoutCard
-                key={workout.id}
+                key={workout._id}
                 workout={workout}
                 onPress={() =>
                   router.push({
-                    pathname: "/workouts/execute",
-                    params: { workoutId: workout.id },
+                    pathname: "/workouts/[id]/execute",
+                    params: { id: workout._id },
                   })
                 }
               />

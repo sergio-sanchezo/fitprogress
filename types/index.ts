@@ -1,5 +1,5 @@
 export interface Exercise {
-  id: string;
+  _id: string;
   name: string;
   muscleGroup: string;
   totalSets: number;
@@ -20,7 +20,7 @@ export interface ExerciseInProgress extends Exercise {
 }
 
 export interface Workout {
-  id: string;
+  _id: string;
   name: string;
   exercises: Exercise[];
   date: string;
@@ -29,10 +29,10 @@ export interface Workout {
 }
 
 export interface ProgressImage {
-  id: string;
+  _id: string;
   imageUrl: string;
   date: string;
-  type: "front" | "side" | "back";
+  type: "front" | "s_ide" | "back";
   notes?: string;
 }
 
@@ -55,7 +55,7 @@ export interface Measurements {
 }
 
 export interface ChatMessage {
-  id: string;
+  _id: string;
   text: string;
   sender: "user" | "ai";
   timestamp: string;

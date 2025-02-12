@@ -1,6 +1,6 @@
 // services/api.ts
+import { Exercise, Measurements, WeightLog, Workout } from "../types";
 import { getIdToken } from "./firebase";
-import { Exercise, Workout, Measurements, WeightLog } from "../types";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -86,6 +86,13 @@ export const workoutApi = {
   delete: async (id: string) => {
     const response = await fetch(`${API_URL}/workouts/${id}`, {
       method: "DELETE",
+      headers: await getHeaders(),
+    });
+    return handleResponse(response);
+  },
+
+  getById: async (id: string) => {
+    const response = await fetch(`${API_URL}/workouts/${id}`, {
       headers: await getHeaders(),
     });
     return handleResponse(response);

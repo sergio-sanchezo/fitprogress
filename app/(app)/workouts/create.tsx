@@ -23,7 +23,7 @@ export default function CreateWorkoutScreen() {
   };
 
   const handleRemoveExercise = (id: string) => {
-    setExercises((prev) => prev.filter((e) => e.id !== id));
+    setExercises((prev) => prev.filter((e) => e._id !== id));
   };
 
   const handleSave = () => {
@@ -57,10 +57,10 @@ export default function CreateWorkoutScreen() {
         <ExerciseSelector onSelect={handleAddExercise} />
 
         {exercises.map((exercise) => (
-          <View key={exercise.id} style={styles.selectedExercise}>
+          <View key={exercise._id} style={styles.selectedExercise}>
             <Text style={styles.exerciseName}>{exercise.name}</Text>
             <TouchableOpacity
-              onPress={() => handleRemoveExercise(exercise.id)}
+              onPress={() => handleRemoveExercise(exercise._id)}
               style={styles.removeButton}
             >
               <Ionicons name="close-circle" size={24} color="#ff4444" />

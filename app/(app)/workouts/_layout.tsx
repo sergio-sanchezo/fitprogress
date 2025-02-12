@@ -2,17 +2,29 @@ import { Stack } from "expo-router";
 
 export default function WorkoutsLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
+    <Stack
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: "#1a1a1a",
+        },
+        headerTintColor: "#fff",
+      }}
+    >
       <Stack.Screen
-        name="create"
+        name="index"
         options={{
-          presentation: "modal",
-          headerShown: false,
+          title: "Rutinas",
         }}
       />
       <Stack.Screen
-        name="execute"
+        name="create"
+        options={{
+          title: "Nueva Rutina",
+          presentation: "modal",
+        }}
+      />
+      <Stack.Screen
+        name="[id]"
         options={{
           headerShown: false,
         }}
