@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
-import { styles } from "../../styles";
-import { Workout, ExerciseInProgress } from "../../types";
-import { RestTimer } from "../../components/RestTimer";
-import { ExerciseProgress } from "../../components/ExerciseProgress";
+import { styles } from "../../../styles";
+import { Workout, ExerciseInProgress } from "../../../types";
+import { RestTimer } from "../../../components/RestTimer";
+import { ExerciseProgress } from "../../../components/ExerciseProgress";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function ExecuteWorkoutScreen() {

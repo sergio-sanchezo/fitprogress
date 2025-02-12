@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import { styles } from "../styles";
-import { WeightChart } from "../components/WeightChart";
+import { styles } from "../../styles";
+import { WeightChart } from "../../components/WeightChart";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const sampleWeightLogs = [

@@ -6,8 +6,8 @@ import {
   TextInput,
   TouchableOpacity,
 } from "react-native";
-import { styles } from "../styles";
-import { ChatMessage } from "../types";
+import { styles } from "../../styles";
+import { ChatMessage } from "../../types";
 import { Ionicons } from "@expo/vector-icons";
 
 const initialMessages: ChatMessage[] = [

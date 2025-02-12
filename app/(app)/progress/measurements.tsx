@@ -8,8 +8,8 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { Measurements } from "../../types";
-import { styles } from "../../styles";
+import { Measurements } from "../../../types";
+import { styles } from "../../../styles";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MeasurementsScreen() {

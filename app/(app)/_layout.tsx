@@ -58,6 +58,15 @@ export default function AppLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Ajustes",
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="settings-outline" size={24} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

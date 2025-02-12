@@ -3,8 +3,8 @@ import { Link, useRouter } from "expo-router";
 import React from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { styles } from "../../styles";
-import type { Workout } from "../../types";
+import { styles } from "../../../styles";
+import type { Workout } from "../../../types";
 
 const sampleWorkouts: Workout[] = [
   {

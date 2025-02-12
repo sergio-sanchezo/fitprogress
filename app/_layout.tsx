@@ -41,12 +41,6 @@ export default function RootLayout() {
                 presentation: "modal",
               }}
             />
-            <Stack.Screen
-              name="(modals)"
-              options={{
-                presentation: "modal",
-              }}
-            />
           </Stack>
         </AuthMiddleware>
       </AuthProvider>

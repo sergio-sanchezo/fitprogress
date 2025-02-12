@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { Link } from "expo-router";
-import { styles } from "../../styles";
-import { ProgressImage } from "../../types";
+import { styles } from "../../../styles";
+import { ProgressImage } from "../../../types";
 import { Ionicons } from "@expo/vector-icons";
 
 const sampleImages: ProgressImage[] = [

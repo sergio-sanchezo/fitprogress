@@ -3,8 +3,8 @@ import { Link, useRouter } from "expo-router";
 import React from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { WorkoutCard } from "../components/WorkoutCard";
-import { styles } from "../styles";
+import { WorkoutCard } from "../../components/WorkoutCard";
+import { styles } from "./../../styles";
 
 // Datos de ejemplo para la demo
 // Datos de ejemplo

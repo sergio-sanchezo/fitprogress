@@ -8,9 +8,9 @@ import {
   Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { styles } from "../../styles";
-import { Exercise } from "../../types";
-import { ExerciseSelector } from "../../components/ExerciseSelector";
+import { styles } from "../../../styles";
+import { Exercise } from "../../../types";
+import { ExerciseSelector } from "../../../components/ExerciseSelector";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function CreateWorkoutScreen() {

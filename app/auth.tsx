@@ -1,20 +1,19 @@
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
+  ActivityIndicator,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
-  Image,
-  SafeAreaView,
-  Alert,
+  View,
 } from "react-native";
-import { useRouter } from "expo-router";
 import { useAuth } from "../contexts/AuthContext";
-import { StyleSheet } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function AuthScreen() {
   const [email, setEmail] = useState("");
@@ -58,7 +57,7 @@ export default function AuthScreen() {
         <View style={styles.content}>
           {/* Logo or App Name */}
           <View style={styles.headerContainer}>
-            <Text style={styles.appName}>FitTrack</Text>
+            <Text style={styles.appName}>FitProgress</Text>
             <Text style={styles.subtitle}>
               {isLogin ? "Bienvenido de nuevo" : "Crea tu cuenta"}
             </Text>

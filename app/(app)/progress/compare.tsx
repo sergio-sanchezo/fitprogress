@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { View, Image, TouchableOpacity, Text, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { ProgressImage } from "../../types";
-import { styles } from "../../styles";
+import { ProgressImage } from "../../../types";
+import { styles } from "../../../styles";
 
 export default function CompareScreen() {
   const router = useRouter();
