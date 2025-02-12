@@ -68,7 +68,6 @@ export function ProgressMetrics() {
         <Metric icon="barbell" value="2,450 kg" label="Peso Total" />
         <Metric icon="time" value="8h 30m" label="Tiempo Total" />
       </View>
-      <View style={styles.separator} />
       <View style={styles.measurementsContainer}>
         <Text style={styles.measurementsTitle}>Últimas Medidas</Text>
         <View style={styles.measurementsGrid}>
