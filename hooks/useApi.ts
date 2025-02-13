@@ -1,9 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { Exercise, Measurements, WeightLog, Workout } from "@/types";
+import {
+  Exercise,
+  Measurements,
+  ProgressImage,
+  WeightLog,
+  Workout,
+} from "@/types";
 import {
   exerciseApi,
   measurementApi,
+  progressApi,
   weightLogApi,
   workoutApi,
 } from "@/services/api";
@@ -60,4 +67,8 @@ export function useWorkouts() {
 
 export function useWeightLogs() {
   return useApi<WeightLog[]>(weightLogApi.getAll);
+}
+
+export function useProgressImages() {
+  return useApi<ProgressImage[]>(progressApi.getAll);
 }

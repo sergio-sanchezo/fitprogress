@@ -1,3 +1,4 @@
+// app/(app)/progress/measurements.tsx
 import React, { useState } from "react";
 import {
   View,
@@ -6,52 +7,154 @@ import {
   Text,
   ScrollView,
   Alert,
+  ActivityIndicator,
+  FlatList,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Measurements } from "../../../types";
 import { styles } from "../../../styles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { measurementApi } from "../../../services/api";
+import { useMeasurements } from "../../../hooks/useApi";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function MeasurementsScreen() {
   const router = useRouter();
-  const [measurements, setMeasurements] = useState<Measurements>({
-    date: new Date().toISOString(),
-    chest: 0,
-    waist: 0,
-    hips: 0,
-    leftArm: 0,
-    rightArm: 0,
-    leftThigh: 0,
-    rightThigh: 0,
-    leftCalf: 0,
-    rightCalf: 0,
-  });
+  const {
+    data: existingMeasurements,
+    loading: loadingHistory,
+    refresh,
+  } = useMeasurements();
+  const [measurements, setMeasurements] = useState<Measurements>(
+    {} as Measurements
+  );
+  const [loading, setLoading] = useState(false);
 
-  const handleSave = () => {
-    // Aquí iría la lógica para guardar las medidas
-    Alert.alert("Éxito", "Medidas guardadas correctamente", [
-      { text: "OK", onPress: () => router.back() },
-    ]);
+  // Get the latest measurements to show as placeholders
+  const latestMeasurements = existingMeasurements?.[0];
+
+  React.useEffect(() => {
+    if (latestMeasurements) {
+      // Pre-fill form with latest measurements as reference
+      setMeasurements((prev) => ({
+        ...prev,
+        chest: latestMeasurements.chest,
+        waist: latestMeasurements.waist,
+        hips: latestMeasurements.hips,
+        leftArm: latestMeasurements.leftArm,
+        rightArm: latestMeasurements.rightArm,
+        leftThigh: latestMeasurements.leftThigh,
+        rightThigh: latestMeasurements.rightThigh,
+        leftCalf: latestMeasurements.leftCalf,
+        rightCalf: latestMeasurements.rightCalf,
+      }));
+    }
+  }, [latestMeasurements]);
+
+  const handleSave = async () => {
+    try {
+      setLoading(true);
+      await measurementApi.create(measurements);
+      Alert.alert("Éxito", "Medidas guardadas correctamente", [
+        {
+          text: "OK",
+          onPress: () => {
+            refresh(); // Refresh the measurements list
+            router.back();
+          },
+        },
+      ]);
+    } catch (error) {
+      Alert.alert("Error", "No se pudieron guardar las medidas");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const renderMeasurementInput = (label: string, key: keyof Measurements) => (
-    <View style={styles.measurementField}>
-      <Text style={styles.measurementLabel}>{label}</Text>
-      <TextInput
-        style={styles.measurementInput}
-        value={measurements[key]?.toString()}
-        onChangeText={(value) =>
-          setMeasurements({
-            ...measurements,
-            [key]: parseFloat(value) || 0,
-          })
-        }
-        keyboardType="numeric"
-        placeholder="0"
-      />
-      <Text style={styles.measurementUnit}>cm</Text>
-    </View>
-  );
+  const renderMeasurementInput = (label: string, key: keyof Measurements) => {
+    if (key === "date" || key === "_id") return null;
+
+    return (
+      <View style={styles.measurementField} key={key}>
+        <Text style={styles.measurementLabel}>{label}</Text>
+        <TextInput
+          style={styles.measurementInput}
+          value={measurements[key]?.toString()}
+          onChangeText={(value) =>
+            setMeasurements({
+              ...measurements,
+              [key]: parseFloat(value) || 0,
+            })
+          }
+          keyboardType="numeric"
+          placeholder={
+            latestMeasurements ? latestMeasurements[key].toString() : "0"
+          }
+          placeholderTextColor="#666"
+        />
+        <Text style={styles.measurementUnit}>cm</Text>
+      </View>
+    );
+  };
+
+  const renderMeasurementHistory = () => {
+    if (!existingMeasurements?.length) return null;
+
+    return (
+      <View style={styles.historySection}>
+        <Text style={styles.historyTitle}>Historial de Medidas</Text>
+        {existingMeasurements.map((measurement, index) => (
+          <View key={measurement._id || index} style={styles.historyCard}>
+            <Text style={styles.historyDate}>
+              {new Date(measurement.date).toLocaleDateString()}
+            </Text>
+            <View style={styles.historyGrid}>
+              <View style={styles.historyRow}>
+                <Text style={styles.historyLabel}>Pecho:</Text>
+                <Text style={styles.historyValue}>{measurement.chest} cm</Text>
+              </View>
+              <View style={styles.historyRow}>
+                <Text style={styles.historyLabel}>Cintura:</Text>
+                <Text style={styles.historyValue}>{measurement.waist} cm</Text>
+              </View>
+              {/* Add more measurements as needed */}
+            </View>
+            <TouchableOpacity
+              style={styles.expandButton}
+              onPress={() => {
+                // Show full details in a modal or navigate to detail screen
+                Alert.alert(
+                  "Detalles",
+                  `
+                  Pecho: ${measurement.chest} cm
+                  Cintura: ${measurement.waist} cm
+                  Cadera: ${measurement.hips} cm
+                  Brazo Izq: ${measurement.leftArm} cm
+                  Brazo Der: ${measurement.rightArm} cm
+                  Muslo Izq: ${measurement.leftThigh} cm
+                  Muslo Der: ${measurement.rightThigh} cm
+                  Pant. Izq: ${measurement.leftCalf} cm
+                  Pant. Der: ${measurement.rightCalf} cm
+                `
+                );
+              }}
+            >
+              <Text style={styles.expandButtonText}>Ver Más</Text>
+              <Ionicons name="chevron-down" size={16} color="#4CAF50" />
+            </TouchableOpacity>
+          </View>
+        ))}
+      </View>
+    );
+  };
+
+  if (loadingHistory) {
+    return (
+      <SafeAreaView style={[styles.safeArea, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -72,10 +175,20 @@ export default function MeasurementsScreen() {
           {renderMeasurementInput("Pantorrilla Izquierda", "leftCalf")}
           {renderMeasurementInput("Pantorrilla Derecha", "rightCalf")}
 
-          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Guardar Medidas</Text>
+          <TouchableOpacity
+            style={[styles.saveButton, loading && styles.disabledButton]}
+            onPress={handleSave}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={styles.saveButtonText}>Guardar Medidas</Text>
+            )}
           </TouchableOpacity>
         </View>
+
+        {renderMeasurementHistory()}
       </ScrollView>
     </SafeAreaView>
   );

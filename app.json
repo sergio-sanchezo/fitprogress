@@ -42,8 +42,8 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow fitprogress to access your camera",
-          "microphonePermission": "Allow fitprogress to access your microphone",
+          "cameraPermission": "Allow FitProgress to access your camera",
+          "microphonePermission": "Allow FitProgress to access your microphone",
           "recordAudioAndroid": true
         }
       ],

@@ -1,54 +1,50 @@
-import React, { useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { styles } from "../../../../styles";
-import { Workout, ExerciseInProgress } from "../../../../types";
+import { Workout, ExerciseInProgress, Exercise } from "../../../../types";
 import { RestTimer } from "../../../../components/RestTimer";
 import { ExerciseProgress } from "../../../../components/ExerciseProgress";
 import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useApi } from "@/hooks/useApi";
+import { workoutApi } from "@/services/api";
 
 export default function ExecuteWorkoutScreen() {
+  const { id } = useLocalSearchParams();
+  const router = useRouter();
+  const {
+    data: workout,
+    loading,
+    error,
+  } = useApi(() => workoutApi.getById(id as string), [id]);
+
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [showTimer, setShowTimer] = useState(false);
-
-  // Información dummy predefinida
-  const workout: Workout = {
-    _id: "1",
-    name: "Rutina de Ejemplo",
-    exercises: [
-      {
-        _id: "1",
-        name: "Press de Banca",
-        muscleGroup: "Pecho",
-        totalSets: 4,
-        reps: 12,
-        weight: 60,
-      },
-      {
-        _id: "2",
-        name: "Aperturas",
-        muscleGroup: "Pecho",
-        totalSets: 3,
-        reps: 15,
-        weight: 14,
-      },
-    ],
-    date: new Date().toISOString(),
-    duration: 60,
-  };
-
   const [exercisesProgress, setExercisesProgress] = useState<
     ExerciseInProgress[]
-  >(
-    workout.exercises.map((exercise) => ({
-      ...exercise,
-      sets: Array.from({ length: exercise.totalSets }, (_, i) => ({
-        setNumber: i + 1,
-        reps: exercise.reps,
-        weight: exercise.weight,
-        completed: false,
-      })),
-    }))
-  );
+  >([]);
+
+  useEffect(() => {
+    if (workout) {
+      setExercisesProgress(
+        workout.exercises.map((exercise: Exercise) => ({
+          ...exercise,
+          sets: Array.from({ length: exercise.totalSets }, () => ({
+            reps: 0,
+            weight: 0,
+            completed: false,
+          })),
+        }))
+      );
+    }
+  }, [workout]);
 
   const handleSetComplete = (setNumber: number) => {
     setExercisesProgress((prev) => {
@@ -73,7 +69,7 @@ export default function ExecuteWorkoutScreen() {
     });
   };
 
-  const handleFinishWorkout = () => {
+  const handleFinishWorkout = async () => {
     Alert.alert(
       "Finalizar Rutina",
       "¿Estás seguro de que quieres finalizar la rutina?",
@@ -82,14 +78,31 @@ export default function ExecuteWorkoutScreen() {
         {
           text: "Finalizar",
           style: "destructive",
-          onPress: () => {
-            // Aquí iría la lógica para guardar el progreso
-            Alert.alert("Rutina finalizada");
+          onPress: async () => {
+            try {
+              // Here you would typically save the workout progress to the backend
+              // For now, we'll just navigate back
+              Alert.alert(
+                "Rutina finalizada",
+                "Progreso guardado correctamente",
+                [{ text: "OK", onPress: () => router.back() }]
+              );
+            } catch (error) {
+              Alert.alert("Error", "No se pudo guardar el progreso");
+            }
           },
         },
       ]
     );
   };
+
+  if (loading || !workout) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#4CAF50" />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>

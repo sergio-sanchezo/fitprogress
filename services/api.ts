@@ -1,24 +1,7 @@
-// services/api.ts
+import { getHeaders, handleResponse } from "@/utils";
 import { Exercise, Measurements, WeightLog, Workout } from "../types";
-import { getIdToken } from "./firebase";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
-
-const getHeaders = async () => {
-  const token = await getIdToken();
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  };
-};
-
-const handleResponse = async (response: Response) => {
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "An error occurred");
-  }
-  return response.json();
-};
 
 // Exercise API
 export const exerciseApi = {
@@ -168,5 +151,39 @@ export const weightLogApi = {
       headers: await getHeaders(),
     });
     return handleResponse(response);
+  },
+};
+
+export const progressApi = {
+  getAll: async () => {
+    const response = await fetch(`${API_URL}/progress`, {
+      headers: await getHeaders(),
+    });
+    return handleResponse(response);
+  },
+
+  saveImageReference: async (
+    imageUrl: string,
+    type: "front" | "side" | "back"
+  ) => {
+    const response = await fetch(`${API_URL}/progress`, {
+      method: "POST",
+      headers: await getHeaders(),
+      body: JSON.stringify({
+        imageUrl,
+        type,
+      }),
+    });
+    return handleResponse(response);
+  },
+
+  delete: async (id: string) => {
+    const response = await fetch(`${API_URL}/progress/${id}`, {
+      method: "DELETE",
+      headers: await getHeaders(),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to delete image");
+    }
   },
 };

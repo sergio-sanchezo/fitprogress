@@ -76,6 +76,18 @@ export const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 
+  retryButton: {
+    padding: 8,
+    backgroundColor: "#4CAF50",
+    borderRadius: 8,
+    marginTop: 16,
+  },
+
+  retryButtonText: {
+    color: "white",
+    fontFamily: "Poppins_600SemiBold",
+  },
+
   aiChatButton: {
     flexDirection: "column",
     alignItems: "center",
@@ -124,11 +136,6 @@ export const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     flex: 1,
-    // shadowColor: "#000",
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 4,
-    // elevation: 3,
   },
 
   upcomingWorkoutDay: {
@@ -974,14 +981,6 @@ export const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 12,
     padding: 20,
-    // shadowColor: "#000",
-    // shadowOffset: {
-    //   width: 0,
-    //   height: 2,
-    // },
-    // shadowOpacity: 0.25,
-    // shadowRadius: 4,
-    // elevation: 5,
   },
 
   // Componentes de Carga
@@ -1484,6 +1483,20 @@ export const styles = StyleSheet.create({
     backgroundColor: "#4CAF50",
   },
 
+  uploadProgress: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 16,
+  },
+
+  uploadProgressText: {
+    fontSize: 14,
+    fontFamily: "Poppins_400Regular",
+    color: "#666",
+    marginLeft: 8,
+  },
+
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
@@ -1495,5 +1508,63 @@ export const styles = StyleSheet.create({
     fontFamily: "Poppins_600SemiBold",
     marginBottom: 20,
     color: "#1a1a1a",
+  },
+
+  historySection: {
+    marginTop: 24,
+  },
+  historyTitle: {
+    fontSize: 18,
+    fontFamily: "Poppins_600SemiBold",
+    color: "#1a1a1a",
+    marginBottom: 16,
+  },
+  historyCard: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+  },
+  historyDate: {
+    fontSize: 14,
+    fontFamily: "Poppins_600SemiBold",
+    color: "#4CAF50",
+    marginBottom: 8,
+  },
+  historyGrid: {
+    gap: 8,
+  },
+  historyRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  historyLabel: {
+    fontSize: 14,
+    fontFamily: "Poppins_400Regular",
+    color: "#666",
+  },
+  historyValue: {
+    fontSize: 14,
+    fontFamily: "Poppins_600SemiBold",
+    color: "#1a1a1a",
+  },
+  expandButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 12,
+    padding: 8,
+  },
+  expandButtonText: {
+    fontSize: 14,
+    fontFamily: "Poppins_400Regular",
+    color: "#4CAF50",
+    marginRight: 4,
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

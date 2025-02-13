@@ -42,6 +42,7 @@ export interface WeightLog {
 }
 
 export interface Measurements {
+  _id: string;
   date: string;
   chest: number;
   waist: number;
