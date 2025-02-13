@@ -1,17 +1,34 @@
+// app/(app)/stats.tsx
 import React from "react";
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import { styles } from "../../styles";
 import { WeightChart } from "../../components/WeightChart";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const sampleWeightLogs = [
-  { date: "2024-01-01", weight: 73.2 },
-  { date: "2024-01-15", weight: 74.5 },
-  { date: "2024-02-01", weight: 75.8 },
-  { date: "2024-02-15", weight: 77.2 },
-];
+import { useWeightLogs } from "@/hooks/useApi";
 
 export default function StatsScreen() {
+  const { data: weightLogs, loading, error, refresh } = useWeightLogs();
+
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centerContent}>
+          <ActivityIndicator size="large" color="#4CAF50" />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.centerContent}>
+          <Text>Error: {error.message}</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
@@ -20,11 +37,14 @@ export default function StatsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.chartWrapper}>
-          <WeightChart logs={sampleWeightLogs} />
+          <WeightChart logs={weightLogs || []} />
         </View>
         <View style={styles.statCard}>
           <Text style={styles.statTitle}>Entrenamientos Este Mes</Text>
-          <Text style={styles.statValue}>12</Text>
+          {/* You can fetch the actual workouts count from your API */}
+          <Text style={styles.statValue}>
+            {weightLogs ? weightLogs.length : 0}
+          </Text>
           <Text style={styles.statSubtext}>
             +2 comparado con el mes anterior
           </Text>

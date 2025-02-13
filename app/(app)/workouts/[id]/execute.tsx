@@ -31,20 +31,22 @@ export default function ExecuteWorkoutScreen() {
     ExerciseInProgress[]
   >([]);
 
-  useEffect(() => {
-    if (workout) {
-      setExercisesProgress(
-        workout.exercises.map((exercise: Exercise) => ({
-          ...exercise,
-          sets: Array.from({ length: exercise.totalSets }, () => ({
-            reps: 0,
-            weight: 0,
-            completed: false,
-          })),
-        }))
-      );
-    }
-  }, [workout]);
+  // useEffect(() => {
+  //   if (workout) {
+  //     setExercisesProgress(
+  //       workout.exercises.map((exercise: Exercise) => ({
+  //         ...exercise,
+  //         sets: Array.from({ length: exercise.totalSets }, (_, index) => ({
+  //           // Optionally, you can include the set number:
+  //           setNumber: index + 1,
+  //           reps: 0,
+  //           weight: 0,
+  //           completed: false,
+  //         })),
+  //       }))
+  //     );
+  //   }
+  // }, [workout]);
 
   const handleSetComplete = (setNumber: number) => {
     setExercisesProgress((prev) => {
@@ -80,8 +82,15 @@ export default function ExecuteWorkoutScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              // Here you would typically save the workout progress to the backend
-              // For now, we'll just navigate back
+              // Prepare progress data to send to the backend
+              const progressData = {
+                workoutId: workout._id,
+                finishedAt: new Date().toISOString(),
+                exercisesProgress,
+              };
+
+              console.log(progressData);
+
               Alert.alert(
                 "Rutina finalizada",
                 "Progreso guardado correctamente",

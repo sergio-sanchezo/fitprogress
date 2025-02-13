@@ -1,49 +1,28 @@
+// app/(app)/index.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import React from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WorkoutCard } from "../../components/WorkoutCard";
 import { styles } from "./../../styles";
-import { Workout } from "@/types";
-
-// Datos de ejemplo para la demo
-// Datos de ejemplo
-function generateSampleWorkouts(n: number): Workout[] {
-  const workouts = [];
-  for (let i = 1; i <= n; i++) {
-    workouts.push({
-      _id: i.toString(),
-      name: `Rutina ${i}`,
-      exercises: [
-        {
-          _id: "1",
-          name: "Ejercicio 1",
-          muscleGroup: "Grupo Muscular",
-          totalSets: 4,
-          reps: 12,
-          weight: 60,
-        },
-        {
-          _id: "2",
-          name: "Ejercicio 2",
-          muscleGroup: "Grupo Muscular",
-          totalSets: 3,
-          reps: 15,
-          weight: 14,
-        },
-      ],
-      date: new Date().toISOString(),
-      duration: 60,
-    });
-  }
-  return workouts;
-}
-
-const sampleWorkouts = generateSampleWorkouts(10);
+import { useWorkouts, useSuggestedWorkouts } from "@/hooks/useApi";
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { data: workouts, loading, error, refresh } = useWorkouts();
+  const {
+    data: suggestedWorkouts,
+    loading: loadingSuggested,
+    error: suggestedError,
+    refresh: refreshSuggested,
+  } = useSuggestedWorkouts();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -52,23 +31,24 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Rutina del Día */}
+        {/* Rutinas Disponibles */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Rutinas Disponibles</Text>
           <View style={styles.bentoGrid}>
-            {sampleWorkouts.slice(0, 6).map((workout) => (
-              <WorkoutCard
-                key={workout._id}
-                workout={workout}
-                onPress={() =>
-                  router.push({
-                    pathname: "/workouts/[id]/execute",
-                    params: { id: workout._id },
-                  })
-                }
-              />
-            ))}
-            {sampleWorkouts.length > 6 && (
+            {workouts &&
+              workouts.slice(0, 6).map((workout) => (
+                <WorkoutCard
+                  key={workout._id}
+                  workout={workout}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/workouts/[id]/execute",
+                      params: { id: workout._id },
+                    })
+                  }
+                />
+              ))}
+            {workouts && workouts.length > 6 && (
               <TouchableOpacity onPress={() => router.push("/workouts")}>
                 <Text style={styles.sectionLink}>Ver más rutinas</Text>
               </TouchableOpacity>
@@ -89,22 +69,47 @@ export default function HomeScreen() {
           </Link>
         </View>
 
-        {/* Próximas Rutinas */}
+        {/* Próximas Rutinas Inteligentes */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Próximas Rutinas</Text>
-          <View style={styles.upcomingWorkouts}>
-            <TouchableOpacity style={styles.upcomingWorkoutCard}>
-              <Text style={styles.upcomingWorkoutDay}>Mañana</Text>
-              <Text style={styles.upcomingWorkoutName}>Pierna y Glúteos</Text>
-              <Text style={styles.upcomingWorkoutTime}>09:00 AM • 45 min</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.upcomingWorkoutCard}>
-              <Text style={styles.upcomingWorkoutDay}>Jueves</Text>
-              <Text style={styles.upcomingWorkoutName}>Espalda y Bíceps</Text>
-              <Text style={styles.upcomingWorkoutTime}>10:00 AM • 60 min</Text>
-            </TouchableOpacity>
-          </View>
+          {loadingSuggested ? (
+            <ActivityIndicator size="small" color="#4CAF50" />
+          ) : suggestedError ? (
+            <Text>Error: {suggestedError.message}</Text>
+          ) : suggestedWorkouts && suggestedWorkouts.length > 0 ? (
+            <View style={styles.upcomingWorkouts}>
+              {suggestedWorkouts.map((workout) => {
+                const workoutDate = new Date(workout.date);
+                // Format day and time in Spanish
+                const day = workoutDate.toLocaleDateString("es-ES", {
+                  weekday: "long",
+                });
+                const time = workoutDate.toLocaleTimeString("es-ES", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                });
+                return (
+                  <TouchableOpacity
+                    key={workout._id}
+                    style={styles.upcomingWorkoutCard}
+                    onPress={() => router.push(`/workouts/${workout._id}`)}
+                  >
+                    <Text style={styles.upcomingWorkoutDay}>{day}</Text>
+                    <Text style={styles.upcomingWorkoutName}>
+                      {workout.name}
+                    </Text>
+                    <Text style={styles.upcomingWorkoutTime}>
+                      {time} • {workout.duration} min
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ) : (
+            <Text style={styles.emptyStateText}>
+              No hay rutinas próximas programadas.
+            </Text>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

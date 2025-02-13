@@ -80,6 +80,13 @@ export const workoutApi = {
     });
     return handleResponse(response);
   },
+
+  getSuggestedUpcoming: async () => {
+    const response = await fetch(`${API_URL}/workouts/suggest`, {
+      headers: await getHeaders(),
+    });
+    return handleResponse(response);
+  },
 };
 
 // Measurements API

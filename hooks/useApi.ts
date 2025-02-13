@@ -61,8 +61,13 @@ export function useMeasurements() {
   return useApi<Measurements[]>(measurementApi.getAll);
 }
 
+// Workouts
 export function useWorkouts() {
   return useApi<Workout[]>(workoutApi.getAll);
+}
+
+export function useSuggestedWorkouts() {
+  return useApi<Workout[]>(workoutApi.getSuggestedUpcoming);
 }
 
 export function useWeightLogs() {
