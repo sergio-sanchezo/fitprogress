@@ -16,7 +16,12 @@ import { useWorkouts, useSuggestedWorkouts } from "@/hooks/useApi";
 
 export default function HomeScreen() {
   const router = useRouter();
-  const { data: workouts, loading, error, refresh } = useWorkouts();
+  const {
+    data: workouts,
+    loading: loadingWorkouts,
+    error: errorWorkouts,
+    refresh,
+  } = useWorkouts();
   const {
     data: suggestedWorkouts,
     loading: loadingSuggested,
@@ -34,26 +39,36 @@ export default function HomeScreen() {
         {/* Rutinas Disponibles */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Rutinas Disponibles</Text>
-          <View style={styles.bentoGrid}>
-            {workouts &&
-              workouts.slice(0, 6).map((workout) => (
-                <WorkoutCard
-                  key={workout._id}
-                  workout={workout}
-                  onPress={() =>
-                    router.push({
-                      pathname: "/workouts/[id]/execute",
-                      params: { id: workout._id },
-                    })
-                  }
-                />
-              ))}
-            {workouts && workouts.length > 6 && (
-              <TouchableOpacity onPress={() => router.push("/workouts")}>
-                <Text style={styles.sectionLink}>Ver más rutinas</Text>
-              </TouchableOpacity>
-            )}
-          </View>
+          {loadingWorkouts ? (
+            <ActivityIndicator size="small" color="#4CAF50" />
+          ) : errorWorkouts ? (
+            <Text>Error: {errorWorkouts.message}</Text>
+          ) : workouts && workouts.length === 0 ? (
+            <Text style={styles.emptyStateText}>
+              No hay rutinas disponibles por el momento.
+            </Text>
+          ) : (
+            <View style={styles.bentoGrid}>
+              {workouts &&
+                workouts.slice(0, 6).map((workout) => (
+                  <WorkoutCard
+                    key={workout._id}
+                    workout={workout}
+                    onPress={() =>
+                      router.push({
+                        pathname: "/workouts/[id]/execute",
+                        params: { id: workout._id },
+                      })
+                    }
+                  />
+                ))}
+              {workouts && workouts.length > 6 && (
+                <TouchableOpacity onPress={() => router.push("/workouts")}>
+                  <Text style={styles.sectionLink}>Ver más rutinas</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          )}
         </View>
 
         {/* Consejos de FitAI */}
