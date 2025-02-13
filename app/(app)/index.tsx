@@ -52,30 +52,6 @@ export default function HomeScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Acciones Rápidas */}
-        <View style={styles.quickActions}>
-          <Link href="/workouts/create" asChild>
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="fitness" size={24} color="white" />
-              <Text style={styles.actionButtonText}>Nueva Rutina</Text>
-            </TouchableOpacity>
-          </Link>
-
-          <Link href="/progress/capture" asChild>
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="camera" size={24} color="white" />
-              <Text style={styles.actionButtonText}>Foto Progreso</Text>
-            </TouchableOpacity>
-          </Link>
-
-          <Link href="/stats" asChild>
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="stats-chart" size={24} color="white" />
-              <Text style={styles.actionButtonText}>Estadísticas</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
-
         {/* Rutina del Día */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Rutinas Disponibles</Text>
