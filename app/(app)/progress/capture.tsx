@@ -1,15 +1,19 @@
-// app/(app)/progress/capture.tsx
-import React, { useEffect, useState } from "react";
-import { View, TouchableOpacity, Text, ActivityIndicator } from "react-native";
-import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
-import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
+import { CameraType, CameraView, useCameraPermissions } from "expo-camera";
+import * as ImagePicker from "expo-image-picker";
 import { useRouter } from "expo-router";
-import { Alert } from "react-native";
-import { styles } from "../../../styles";
+import React, { useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { useAuth } from "../../../contexts/AuthContext";
 import { progressApi } from "../../../services/api";
 import { uploadImage } from "../../../services/storage";
-import { useAuth } from "../../../contexts/AuthContext";
+import { styles } from "../../../styles";
 
 export default function CaptureScreen() {
   const [type, setType] = useState<CameraType>("back");

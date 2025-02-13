@@ -1,22 +1,20 @@
-// app/(app)/progress/measurements.tsx
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Text,
   TextInput,
   TouchableOpacity,
-  Text,
-  ScrollView,
-  Alert,
-  ActivityIndicator,
-  FlatList,
+  View,
 } from "react-native";
-import { useRouter } from "expo-router";
-import { Measurements } from "../../../types";
-import { styles } from "../../../styles";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { measurementApi } from "../../../services/api";
 import { useMeasurements } from "../../../hooks/useApi";
-import { Ionicons } from "@expo/vector-icons";
+import { measurementApi } from "../../../services/api";
+import { styles } from "../../../styles";
+import { Measurements } from "../../../types";
 
 export default function MeasurementsScreen() {
   const router = useRouter();
