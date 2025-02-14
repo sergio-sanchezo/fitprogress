@@ -23,12 +23,6 @@ export default function WorkoutsLayout() {
           presentation: "modal",
         }}
       />
-      <Stack.Screen
-        name="[id]"
-        options={{
-          headerShown: false,
-        }}
-      />
     </Stack>
   );
 }

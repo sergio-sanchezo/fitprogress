@@ -61,3 +61,21 @@ export interface ChatMessage {
   sender: "user" | "ai";
   timestamp: string;
 }
+
+export interface WeeklyStats {
+  totalWorkouts: number;
+  totalWeight: number;
+  totalDuration: number;
+  completedExercises: number;
+}
+
+export interface MonthlyComparison {
+  workoutChange: number;
+  weightChange: number;
+  durationChange: number;
+  bodyWeightChange: number;
+}
+
+export interface ExerciseInProgress extends Exercise {
+  sets: WorkoutSet[];
+}

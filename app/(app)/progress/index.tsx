@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     borderRadius: 8,
-    backgroundColor: "#2E7D32", // Darker green for better contrast
+    backgroundColor: "#4CAF50",
     flex: 1,
     marginHorizontal: 4,
     shadowColor: "#000",

@@ -1,5 +1,13 @@
 import { getHeaders, handleResponse } from "@/utils";
-import { Exercise, Measurements, WeightLog, Workout } from "../types";
+import {
+  Exercise,
+  ExerciseInProgress,
+  Measurements,
+  MonthlyComparison,
+  WeeklyStats,
+  WeightLog,
+  Workout,
+} from "../types";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:3000/api";
 
@@ -85,6 +93,36 @@ export const workoutApi = {
     const response = await fetch(`${API_URL}/workouts/suggest`, {
       headers: await getHeaders(),
     });
+    return handleResponse(response);
+  },
+
+  getInstancesById: async (id: string) => {
+    const response = await fetch(`${API_URL}/workouts/instances/${id}`, {
+      headers: await getHeaders(),
+    });
+
+    return handleResponse(response);
+  },
+
+  // Complete a workout instance
+  completeInstance: async (
+    id: string,
+    completionData: {
+      exercises: ExerciseInProgress[];
+      completedAt: string;
+      notes?: string;
+    }
+  ) => {
+    const data = JSON.stringify(completionData);
+
+    const response = await fetch(
+      `${API_URL}/workouts/instances/${id}/complete`,
+      {
+        method: "POST",
+        headers: await getHeaders(),
+        body: JSON.stringify(completionData),
+      }
+    );
     return handleResponse(response);
   },
 };
@@ -192,5 +230,23 @@ export const progressApi = {
     if (!response.ok) {
       throw new Error("Failed to delete image");
     }
+  },
+};
+
+export const statsAPi = {
+  getWeeklyStats: async (): Promise<WeeklyStats> => {
+    const response = await fetch(`${API_URL}/stats/weekly`, {
+      headers: await getHeaders(),
+    });
+
+    return handleResponse(response);
+  },
+
+  getMonthlyComparison: async (): Promise<MonthlyComparison> => {
+    const response = await fetch(`${API_URL}/stats/monthly`, {
+      headers: await getHeaders(),
+    });
+
+    return handleResponse(response);
   },
 };

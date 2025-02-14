@@ -75,6 +75,17 @@ export default function WorkoutDetailScreen() {
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
+        <Stack.Screen
+          options={{
+            title: "Detalle de Rutina",
+            headerShown: true,
+            headerBackTitle: "Rutinas",
+            headerStyle: {
+              backgroundColor: "#1a1a1a",
+            },
+            headerTintColor: "#fff",
+          }}
+        />
         <View style={[styles.container, styles.centerContent]}>
           <ActivityIndicator size="large" color="#4CAF50" />
         </View>
@@ -85,6 +96,17 @@ export default function WorkoutDetailScreen() {
   if (error || !workout) {
     return (
       <SafeAreaView style={styles.safeArea}>
+        <Stack.Screen
+          options={{
+            title: "Detalle de Rutina",
+            headerShown: true,
+            headerBackTitle: "Rutinas",
+            headerStyle: {
+              backgroundColor: "#1a1a1a",
+            },
+            headerTintColor: "#fff",
+          }}
+        />
         <View style={[styles.container, styles.centerContent]}>
           <Text style={styles.errorText}>
             {error?.message || "No se pudo cargar la rutina"}

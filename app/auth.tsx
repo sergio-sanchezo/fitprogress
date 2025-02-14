@@ -16,8 +16,8 @@ import {
 import { useAuth } from "../contexts/AuthContext";
 
 export default function AuthScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("sesanchezo@unal.edu.co");
+  const [password, setPassword] = useState("123456");
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);

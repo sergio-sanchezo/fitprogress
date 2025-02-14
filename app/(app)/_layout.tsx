@@ -29,9 +29,7 @@ export default function AppLayout() {
           tabBarIcon: ({ color }) => (
             <Ionicons name="fitness" size={24} color={color} />
           ),
-          // Hide the tab bar when navigating to nested screens
           href: "/workouts",
-          // This makes sure the header from the nested stack is shown
           headerShown: false,
         }}
       />

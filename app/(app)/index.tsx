@@ -1,13 +1,14 @@
 // app/(app)/index.tsx
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
-import React from "react";
+import React, { useCallback } from "react";
 import {
   ScrollView,
   Text,
   TouchableOpacity,
   View,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { WorkoutCard } from "../../components/WorkoutCard";
@@ -20,8 +21,9 @@ export default function HomeScreen() {
     data: workouts,
     loading: loadingWorkouts,
     error: errorWorkouts,
-    refresh,
+    refresh: refreshWorkouts,
   } = useWorkouts();
+
   const {
     data: suggestedWorkouts,
     loading: loadingSuggested,
@@ -29,12 +31,31 @@ export default function HomeScreen() {
     refresh: refreshSuggested,
   } = useSuggestedWorkouts();
 
+  // Combine all loading states
+  const isLoading = loadingWorkouts || loadingSuggested;
+
+  // Handle refresh
+  const handleRefresh = useCallback(async () => {
+    // Refresh both data sources simultaneously
+    await Promise.all([refreshWorkouts(), refreshSuggested()]);
+  }, [refreshWorkouts, refreshSuggested]);
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={handleRefresh}
+            colors={["#4CAF50"]}
+            tintColor="#4CAF50"
+            title="Actualizando..."
+            titleColor="#666"
+          />
+        }
       >
         {/* Rutinas Disponibles */}
         <View style={styles.section}>
@@ -42,7 +63,17 @@ export default function HomeScreen() {
           {loadingWorkouts ? (
             <ActivityIndicator size="small" color="#4CAF50" />
           ) : errorWorkouts ? (
-            <Text>Error: {errorWorkouts.message}</Text>
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>
+                Error: {errorWorkouts.message}
+              </Text>
+              <TouchableOpacity
+                style={styles.retryButton}
+                onPress={refreshWorkouts}
+              >
+                <Text style={styles.retryButtonText}>Reintentar</Text>
+              </TouchableOpacity>
+            </View>
           ) : workouts && workouts.length === 0 ? (
             <Text style={styles.emptyStateText}>
               No hay rutinas disponibles por el momento.
@@ -56,14 +87,17 @@ export default function HomeScreen() {
                     workout={workout}
                     onPress={() =>
                       router.push({
-                        pathname: "/workouts/[id]/execute",
+                        pathname: "/workouts/[id]",
                         params: { id: workout._id },
                       })
                     }
                   />
                 ))}
               {workouts && workouts.length > 6 && (
-                <TouchableOpacity onPress={() => router.push("/workouts")}>
+                <TouchableOpacity
+                  style={styles.viewMoreButton}
+                  onPress={() => router.push("/workouts")}
+                >
                   <Text style={styles.sectionLink}>Ver más rutinas</Text>
                 </TouchableOpacity>
               )}
@@ -90,12 +124,21 @@ export default function HomeScreen() {
           {loadingSuggested ? (
             <ActivityIndicator size="small" color="#4CAF50" />
           ) : suggestedError ? (
-            <Text>Error: {suggestedError.message}</Text>
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>
+                Error: {suggestedError.message}
+              </Text>
+              <TouchableOpacity
+                style={styles.retryButton}
+                onPress={refreshSuggested}
+              >
+                <Text style={styles.retryButtonText}>Reintentar</Text>
+              </TouchableOpacity>
+            </View>
           ) : suggestedWorkouts && suggestedWorkouts.length > 0 ? (
             <View style={styles.upcomingWorkouts}>
               {suggestedWorkouts.map((workout) => {
                 const workoutDate = new Date(workout.date);
-                // Format day and time in Spanish
                 const day = workoutDate.toLocaleDateString("es-ES", {
                   weekday: "long",
                 });

@@ -1567,4 +1567,153 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
+  chartHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+
+  weightInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 16,
+  },
+
+  currentWeight: {
+    fontSize: 24,
+    fontFamily: "Poppins_600SemiBold",
+    color: "#1a1a1a",
+  },
+
+  changeIndicator: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  weightGain: {
+    color: "#FF7043",
+  },
+
+  weightLoss: {
+    color: "#4CAF50",
+  },
+
+  changeText: {
+    fontSize: 14,
+    fontFamily: "Poppins_400Regular",
+    color: "#666",
+  },
+
+  weightGainText: {
+    color: "#FF7043",
+  },
+
+  weightLossText: {
+    color: "#4CAF50",
+  },
+
+  statHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+
+  positiveChange: {
+    color: "#4CAF50",
+  },
+
+  negativeChange: {
+    color: "#FF7043",
+  },
+
+  errorContainer: {
+    backgroundColor: "#ffebee",
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
+
+  viewMoreButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: "#4CAF50",
+    alignItems: "center",
+  },
+
+  // Add these to your styles/index.ts file
+
+  timeRangeContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 16,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 8,
+    padding: 4,
+  },
+
+  timeRangeButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+  },
+
+  timeRangeButtonActive: {
+    backgroundColor: "#4CAF50",
+  },
+
+  timeRangeText: {
+    fontSize: 12,
+    fontFamily: "Poppins_400Regular",
+    color: "#666",
+  },
+
+  timeRangeTextActive: {
+    color: "#fff",
+    fontFamily: "Poppins_600SemiBold",
+  },
+
+  statisticsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+  },
+
+  statItem: {
+    alignItems: "center",
+  },
+
+  tooltipContainer: {
+    position: "absolute",
+    backgroundColor: "rgba(0,0,0,0.8)",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
+
+  tooltipDate: {
+    color: "#fff",
+    fontSize: 12,
+    fontFamily: "Poppins_400Regular",
+    marginBottom: 4,
+  },
+
+  tooltipWeight: {
+    color: "#fff",
+    fontSize: 16,
+    fontFamily: "Poppins_600SemiBold",
+  },
 });

@@ -3,7 +3,9 @@ import { useAuth } from "../contexts/AuthContext";
 import {
   Exercise,
   Measurements,
+  MonthlyComparison,
   ProgressImage,
+  WeeklyStats,
   WeightLog,
   Workout,
 } from "@/types";
@@ -11,6 +13,7 @@ import {
   exerciseApi,
   measurementApi,
   progressApi,
+  statsAPi,
   weightLogApi,
   workoutApi,
 } from "@/services/api";
@@ -19,10 +22,26 @@ interface ApiState<T> {
   data: T | null;
   loading: boolean;
   error: Error | null;
+  refresh: () => void;
 }
 
-export function useApi<T>(fetchFn: () => Promise<T>, deps: any[] = []) {
-  const [state, setState] = useState<ApiState<T>>({
+interface UseApiOptions {
+  initialFetch?: boolean;
+  dependencies?: any[];
+}
+
+// Enhanced base hook with better error handling and refresh capability
+interface UseApiOptions {
+  initialFetch?: boolean;
+  dependencies?: any[];
+  hookName?: string;
+}
+
+export function useApi<T>(
+  fetchFn: () => Promise<T>,
+  options: UseApiOptions = { initialFetch: true, dependencies: [] }
+): ApiState<T> {
+  const [state, setState] = useState<Omit<ApiState<T>, "refresh">>({
     data: null,
     loading: true,
     error: null,
@@ -34,23 +53,26 @@ export function useApi<T>(fetchFn: () => Promise<T>, deps: any[] = []) {
     if (!user) return;
 
     try {
-      setState((prev) => ({ ...prev, loading: true }));
+      setState((prev) => ({ ...prev, loading: true, error: null }));
       const data = await fetchFn();
       setState({ data, loading: false, error: null });
     } catch (error) {
-      setState({ data: null, loading: false, error: error as Error });
+      const hook = options.hookName || fetchFn.name || "useApi";
+      const err = error as Error;
+      const errMsg = `Error in hook ${hook}: ${err.message}`;
+      setState({ data: null, loading: false, error: new Error(errMsg) });
+      console.error("Error in hook", hook, err);
+      console.error(errMsg, error);
     }
   }, [fetchFn, user]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData, ...deps]);
+    if (options.initialFetch) {
+      fetchData();
+    }
+  }, [fetchData, ...(options.dependencies || [])]);
 
-  const refresh = () => {
-    fetchData();
-  };
-
-  return { ...state, refresh };
+  return { ...state, refresh: fetchData };
 }
 
 export function useExercises() {
@@ -76,4 +98,16 @@ export function useWeightLogs() {
 
 export function useProgressImages() {
   return useApi<ProgressImage[]>(progressApi.getAll);
+}
+
+export function useMonthlyComparison() {
+  return useApi<MonthlyComparison>(statsAPi.getMonthlyComparison);
+}
+
+export function useWeeklyStats() {
+  return useApi<WeeklyStats>(statsAPi.getWeeklyStats);
+}
+
+export function useWorkoutInstance(id: string) {
+  return useApi<any>(() => workoutApi.getInstance(id), { dependencies: [id] });
 }
