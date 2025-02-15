@@ -8,10 +8,10 @@ import {
   Text,
   TouchableOpacity,
   View,
+  RefreshControl,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../../styles";
-import { RefreshControl, ScrollView } from "react-native-gesture-handler";
 
 export default function WorkoutsScreen() {
   const { data: workouts, loading, error, refresh } = useWorkouts();
@@ -35,40 +35,33 @@ export default function WorkoutsScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={refresh}
-            colors={["#4CAF50"]}
-            tintColor="#4CAF50"
-            title="Actualizando..."
-            titleColor="#666"
-          />
-        }
-      > */}
-      {/* Rutinas Disponibles */}
       <View style={styles.container}>
-        {/* Botón Nueva Rutina */}
-        <Link href="/workouts/create" asChild>
-          <TouchableOpacity style={styles.addButton}>
-            <Ionicons name="add" size={24} color="white" />
-            <Text style={styles.addButtonText}>Nueva Rutina</Text>
-          </TouchableOpacity>
-        </Link>
-
-        {/* Lista de Rutinas */}
         <FlatList
           data={workouts}
+          keyExtractor={(item) => item._id}
+          contentContainerStyle={styles.workoutsList}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={refresh}
+              colors={["#4CAF50"]}
+              tintColor="#4CAF50"
+              title="Actualizando..."
+              titleColor="#666"
+            />
+          }
+          ListHeaderComponent={
+            <Link href="/workouts/create" asChild>
+              <TouchableOpacity style={styles.addButton}>
+                <Ionicons name="add" size={24} color="white" />
+                <Text style={styles.addButtonText}>Nueva Rutina</Text>
+              </TouchableOpacity>
+            </Link>
+          }
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.workoutCard}
-              onPress={() => {
-                router.push(`/workouts/${item._id}` as any);
-              }}
+              onPress={() => router.push(`/workouts/${item._id}`)}
             >
               <Text style={styles.workoutName}>{item.name}</Text>
               <Text style={styles.durationText}>
@@ -76,12 +69,9 @@ export default function WorkoutsScreen() {
               </Text>
             </TouchableOpacity>
           )}
-          keyExtractor={(item) => item._id}
-          contentContainerStyle={styles.workoutsList}
           showsVerticalScrollIndicator={false}
         />
       </View>
-      {/* </ScrollView> */}
     </SafeAreaView>
   );
 }

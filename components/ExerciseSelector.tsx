@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,43 +11,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { Exercise } from "../types";
 import { styles } from "../styles";
 import Animated, { FadeInUp, FadeOutDown } from "react-native-reanimated";
-
-// Base de datos de ejercicios predefinidos
-const exerciseDatabase: Exercise[] = [
-  {
-    id: "1",
-    name: "Press de Banca",
-    muscleGroup: "Pecho",
-    totalSets: 4,
-    reps: 12,
-    weight: 0,
-  },
-  {
-    id: "2",
-    name: "Sentadillas",
-    muscleGroup: "Piernas",
-    totalSets: 4,
-    reps: 12,
-    weight: 0,
-  },
-  {
-    id: "3",
-    name: "Peso Muerto",
-    muscleGroup: "Espalda",
-    totalSets: 4,
-    reps: 12,
-    weight: 0,
-  },
-  {
-    id: "4",
-    name: "Press Militar",
-    muscleGroup: "Hombros",
-    totalSets: 4,
-    reps: 12,
-    weight: 0,
-  },
-  // ... más ejercicios
-];
+import { useExercises } from "../hooks/useApi";
 
 interface ExerciseSelectorProps {
   onSelect: (exercise: Exercise) => void;
@@ -56,22 +20,51 @@ interface ExerciseSelectorProps {
 export function ExerciseSelector({ onSelect }: ExerciseSelectorProps) {
   const [modalVisible, setModalVisible] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const [filteredExercises, setFilteredExercises] = useState(exerciseDatabase);
+  const { data: exerciseDatabase, loading, error, refresh } = useExercises();
+
+  // Local state for filtered exercises; update when the fetched data is available.
+  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
+
+  useEffect(() => {
+    if (exerciseDatabase) {
+      setFilteredExercises(exerciseDatabase);
+    }
+  }, [exerciseDatabase]);
 
   const handleSearch = (text: string) => {
     setSearchText(text);
-    const filtered = exerciseDatabase.filter(
-      (exercise) =>
-        exercise.name.toLowerCase().includes(text.toLowerCase()) ||
-        exercise.muscleGroup.toLowerCase().includes(text.toLowerCase())
-    );
-    setFilteredExercises(filtered);
+    if (exerciseDatabase) {
+      const filtered = exerciseDatabase.filter(
+        (exercise) =>
+          exercise.name.toLowerCase().includes(text.toLowerCase()) ||
+          exercise.muscleGroup.toLowerCase().includes(text.toLowerCase())
+      );
+      setFilteredExercises(filtered);
+    }
   };
 
   const handleSelect = (exercise: Exercise) => {
     onSelect(exercise);
     setModalVisible(false);
   };
+
+  if (loading) {
+    return (
+      <TouchableOpacity style={styles.selectorButton} disabled>
+        <Ionicons name="add-circle-outline" size={24} color="#4CAF50" />
+        <Text style={styles.selectorButtonText}>Cargando ejercicios...</Text>
+      </TouchableOpacity>
+    );
+  }
+
+  if (error) {
+    return (
+      <TouchableOpacity style={styles.selectorButton} onPress={refresh}>
+        <Ionicons name="alert-circle-outline" size={24} color="#FF4444" />
+        <Text style={styles.selectorButtonText}>Error, reintentar</Text>
+      </TouchableOpacity>
+    );
+  }
 
   return (
     <>
@@ -110,7 +103,7 @@ export function ExerciseSelector({ onSelect }: ExerciseSelectorProps) {
 
             <FlatList
               data={filteredExercises}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item._id}
               renderItem={({ item }) => (
                 <Animated.View entering={FadeInUp} exiting={FadeOutDown}>
                   <TouchableOpacity

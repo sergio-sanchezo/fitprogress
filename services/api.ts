@@ -2,6 +2,8 @@ import { getHeaders, handleResponse } from "@/utils";
 import {
   Exercise,
   ExerciseInProgress,
+  ICreateExercise,
+  ICreateWorkout,
   Measurements,
   MonthlyComparison,
   WeeklyStats,
@@ -56,7 +58,7 @@ export const workoutApi = {
     return handleResponse(response);
   },
 
-  create: async (workout: Omit<Workout, "id">) => {
+  create: async (workout: ICreateWorkout) => {
     const response = await fetch(`${API_URL}/workouts`, {
       method: "POST",
       headers: await getHeaders(),
@@ -96,8 +98,16 @@ export const workoutApi = {
     return handleResponse(response);
   },
 
-  getInstancesById: async (id: string) => {
+  getInstancesByTemplateId: async (id: string) => {
     const response = await fetch(`${API_URL}/workouts/instances/${id}`, {
+      headers: await getHeaders(),
+    });
+
+    return handleResponse(response);
+  },
+
+  getInstanceById: async (id: string) => {
+    const response = await fetch(`${API_URL}/workouts/get-instance/${id}`, {
       headers: await getHeaders(),
     });
 
@@ -123,6 +133,39 @@ export const workoutApi = {
         body: JSON.stringify(completionData),
       }
     );
+    return handleResponse(response);
+  },
+
+  getCurrentWeek: async () => {
+    const response = await fetch(`${API_URL}/workouts/current-week`, {
+      headers: await getHeaders(),
+    });
+    return handleResponse(response);
+  },
+
+  getWorkoutDetail: async (id: string, signal?: AbortSignal) => {
+    const response = await fetch(`${API_URL}/workouts/detail/${id}`, {
+      headers: await getHeaders(),
+      signal, // Pass the abort signal here
+    });
+    return handleResponse(response);
+  },
+
+  createInstance: async (data: { templateId: string }) => {
+    const response = await fetch(`${API_URL}/workouts/instance`, {
+      method: "POST",
+      headers: await getHeaders(),
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  createCustomExercise: async (data: ICreateExercise) => {
+    const response = await fetch(`${API_URL}/workouts/custom-exercise`, {
+      method: "POST",
+      headers: await getHeaders(),
+      body: JSON.stringify(data),
+    });
     return handleResponse(response);
   },
 };

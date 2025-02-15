@@ -1,7 +1,8 @@
+// app/(app)/workouts/[id]/execute.tsx
 import { workoutApi } from "@/services/api";
 import { Ionicons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -16,67 +17,33 @@ import { RestTimer } from "../../../../components/RestTimer";
 import { styles } from "../../../../styles";
 import { Exercise, ExerciseInProgress } from "../../../../types";
 
-interface WorkoutInstance {
-  _id: string;
-  templateId: {
-    _id: string;
-    name: string;
-    exercises: Exercise[];
-  };
-  completed: boolean;
-  completedAt?: string;
-}
-
 export default function ExecuteWorkoutScreen() {
   const { id } = useLocalSearchParams();
-  const [workoutInstance, setWorkoutInstance] =
-    useState<WorkoutInstance | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
   const router = useRouter();
-
+  const [workoutInstance, setWorkoutInstance] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | null>(null);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [showTimer, setShowTimer] = useState(false);
   const [exercisesProgress, setExercisesProgress] = useState<
     ExerciseInProgress[]
   >([]);
 
-  const getData = async () => {
-    if (!id) {
-      setError(new Error("No workout ID provided"));
-      setLoading(false);
-      return;
-    }
-
+  // Fetch unified workout detail
+  const getData = useCallback(async () => {
+    if (!id) return;
     try {
-      const instances = await workoutApi.getInstancesById(id as string);
-
-      if (!instances || instances.length === 0) {
-        throw new Error("No data received from server");
+      setLoading(true);
+      // Get unified workout detail (instance or wrapped template)
+      let data = await workoutApi.getWorkoutDetail(id as string);
+      // If data.date is null, it's a template so create a new instance
+      if (!data.date) {
+        data = await workoutApi.createInstance({ templateId: data._id });
       }
+      setWorkoutInstance(data);
 
-      // Find any incomplete instance first
-      let targetInstance = instances.find(
-        (instance: any) => !instance.completed
-      );
-
-      // If no incomplete instance exists, use the most recent one as template
-      if (!targetInstance) {
-        targetInstance = instances[0]; // Most recent instance (sorted by date)
-      }
-
-      if (!targetInstance.templateId) {
-        throw new Error("No template data found");
-      }
-
-      if (!Array.isArray(targetInstance.templateId.exercises)) {
-        throw new Error("No exercises found in template");
-      }
-
-      setWorkoutInstance(targetInstance);
-
-      // Initialize exercise progress
-      const exercises = targetInstance.templateId.exercises;
+      // Initialize progress based on the template exercises
+      const exercises = data.templateId.exercises;
       const initialProgress = exercises.map((exercise: Exercise) => ({
         _id: exercise._id,
         name: exercise.name,
@@ -91,19 +58,19 @@ export default function ExecuteWorkoutScreen() {
           completed: false,
         })),
       }));
-
       setExercisesProgress(initialProgress);
-    } catch (error) {
-      console.error("Error fetching workout:", error);
-      setError(error as Error);
+      setError(null);
+    } catch (err) {
+      console.error("Error fetching workout:", err);
+      setError(err as Error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     getData();
-  }, [id]);
+  }, [getData]);
 
   const handleSetComplete = (setNumber: number) => {
     setExercisesProgress((prev) => {
@@ -134,12 +101,9 @@ export default function ExecuteWorkoutScreen() {
 
   const handleFinishWorkout = async () => {
     if (!workoutInstance) return;
-
-    // Validate all exercises are completed
     const allExercisesCompleted = exercisesProgress.every((exercise) =>
       exercise.sets.every((set) => set.completed)
     );
-
     if (!allExercisesCompleted) {
       Alert.alert(
         "Error",
@@ -147,7 +111,6 @@ export default function ExecuteWorkoutScreen() {
       );
       return;
     }
-
     Alert.alert(
       "Finalizar Rutina",
       "¿Estás seguro de que quieres finalizar la rutina?",
@@ -159,32 +122,15 @@ export default function ExecuteWorkoutScreen() {
           onPress: async () => {
             try {
               setLoading(true);
-
-              const completionData: any = {
-                exercises: exercisesProgress.map((exercise) => ({
-                  _id: exercise._id,
-                  name: exercise.name,
-                  muscleGroup: exercise.muscleGroup,
-                  totalSets: exercise.totalSets,
-                  reps: exercise.reps,
-                  weight: exercise.weight,
-                  sets: exercise.sets.map((set) => ({
-                    setNumber: set.setNumber,
-                    reps: set.reps,
-                    weight: set.weight,
-                    completed: set.completed,
-                  })),
-                })),
+              const completionData = {
+                exercises: exercisesProgress,
                 completedAt: new Date().toISOString(),
                 notes: "Workout completed successfully",
               };
-
-              // Complete the workout
               await workoutApi.completeInstance(
                 workoutInstance._id,
                 completionData
               );
-
               Alert.alert(
                 "Rutina finalizada",
                 "Progreso guardado correctamente",
@@ -205,9 +151,8 @@ export default function ExecuteWorkoutScreen() {
     );
   };
 
-  const allSetsCompleted = (exercise: ExerciseInProgress) => {
-    return exercise.sets?.every((set) => set.completed) ?? false;
-  };
+  const allSetsCompleted = (exercise: ExerciseInProgress) =>
+    exercise.sets.every((set) => set.completed);
 
   const currentExerciseCompleted = exercisesProgress[currentExerciseIndex]
     ? allSetsCompleted(exercisesProgress[currentExerciseIndex])
@@ -221,9 +166,7 @@ export default function ExecuteWorkoutScreen() {
             title: "Ejecutar Rutina",
             headerShown: true,
             headerBackTitle: "Rutinas",
-            headerStyle: {
-              backgroundColor: "#1a1a1a",
-            },
+            headerStyle: { backgroundColor: "#1a1a1a" },
             headerTintColor: "#fff",
           }}
         />
@@ -235,7 +178,7 @@ export default function ExecuteWorkoutScreen() {
     );
   }
 
-  if (error) {
+  if (error || !workoutInstance) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <Stack.Screen
@@ -243,53 +186,19 @@ export default function ExecuteWorkoutScreen() {
             title: "Ejecutar Rutina",
             headerShown: true,
             headerBackTitle: "Rutinas",
-            headerStyle: {
-              backgroundColor: "#1a1a1a",
-            },
+            headerStyle: { backgroundColor: "#1a1a1a" },
             headerTintColor: "#fff",
           }}
         />
         <View style={styles.container}>
-          <Text style={styles.errorText}>Error: {error.message}</Text>
-          <TouchableOpacity
-            style={styles.retryButton}
-            onPress={() => {
-              setError(null);
-              setLoading(true);
-              getData();
-            }}
-          >
+          <Text style={styles.errorText}>
+            Error: {error?.message || "No se encontró la rutina"}
+          </Text>
+          <TouchableOpacity style={styles.retryButton} onPress={getData}>
             <Text style={styles.retryButtonText}>Reintentar</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.retryButton, { marginTop: 10 }]}
-            onPress={() => router.back()}
-          >
-            <Text style={styles.retryButtonText}>Volver</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  if (!workoutInstance || exercisesProgress.length === 0) {
-    return (
-      <SafeAreaView style={styles.safeArea}>
-        <Stack.Screen
-          options={{
-            title: "Ejecutar Rutina",
-            headerShown: true,
-            headerBackTitle: "Rutinas",
-            headerStyle: {
-              backgroundColor: "#1a1a1a",
-            },
-            headerTintColor: "#fff",
-          }}
-        />
-        <View style={styles.container}>
-          <Text style={styles.errorText}>No se encontró la rutina</Text>
-          <TouchableOpacity
-            style={styles.retryButton}
             onPress={() => router.back()}
           >
             <Text style={styles.retryButtonText}>Volver</Text>
@@ -306,9 +215,7 @@ export default function ExecuteWorkoutScreen() {
           title: "Ejecutar Rutina",
           headerShown: true,
           headerBackTitle: "Rutinas",
-          headerStyle: {
-            backgroundColor: "#1a1a1a",
-          },
+          headerStyle: { backgroundColor: "#1a1a1a" },
           headerTintColor: "#fff",
         }}
       />
@@ -317,7 +224,6 @@ export default function ExecuteWorkoutScreen() {
           <Text style={styles.workoutTitle}>
             {workoutInstance.templateId.name}
           </Text>
-
           {exercisesProgress[currentExerciseIndex] && (
             <ExerciseProgress
               exercise={exercisesProgress[currentExerciseIndex]}
@@ -325,7 +231,6 @@ export default function ExecuteWorkoutScreen() {
               onUpdateSet={handleUpdateSet}
             />
           )}
-
           <View style={styles.navigationButtons}>
             <TouchableOpacity
               style={[
@@ -338,7 +243,6 @@ export default function ExecuteWorkoutScreen() {
               <Ionicons name="arrow-back" size={24} color="white" />
               <Text style={styles.navButtonText}>Anterior</Text>
             </TouchableOpacity>
-
             <TouchableOpacity
               style={[
                 styles.navButton,
@@ -357,7 +261,6 @@ export default function ExecuteWorkoutScreen() {
             </TouchableOpacity>
           </View>
         </ScrollView>
-
         <TouchableOpacity
           style={[
             styles.finishButton,
@@ -368,7 +271,6 @@ export default function ExecuteWorkoutScreen() {
         >
           <Text style={styles.finishButtonText}>Finalizar Rutina</Text>
         </TouchableOpacity>
-
         {showTimer && (
           <RestTimer
             duration={60}

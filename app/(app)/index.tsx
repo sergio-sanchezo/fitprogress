@@ -96,7 +96,7 @@ export default function HomeScreen() {
               {workouts && workouts.length > 6 && (
                 <TouchableOpacity
                   style={styles.viewMoreButton}
-                  onPress={() => router.push("/workouts")}
+                  onPress={() => router.replace("/workouts")}
                 >
                   <Text style={styles.sectionLink}>Ver más rutinas</Text>
                 </TouchableOpacity>
@@ -150,7 +150,7 @@ export default function HomeScreen() {
                   <TouchableOpacity
                     key={workout._id}
                     style={styles.upcomingWorkoutCard}
-                    onPress={() => router.push(`/workouts/${workout._id}`)}
+                    onPress={() => router.replace(`/workouts/${workout._id}`)}
                   >
                     <Text style={styles.upcomingWorkoutDay}>{day}</Text>
                     <Text style={styles.upcomingWorkoutName}>

@@ -11,6 +11,14 @@ export const getHeaders = async () => {
 export const handleResponse = async (response: Response) => {
   const text = await response.text();
 
+  // If there's no content, return null (or you could return {} if that fits your use case)
+  if (!text) {
+    if (!response.ok) {
+      throw new Error("Empty response and status code indicates error");
+    }
+    return null;
+  }
+
   try {
     const result = JSON.parse(text);
     if (!response.ok) {

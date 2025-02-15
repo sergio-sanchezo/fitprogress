@@ -107,7 +107,3 @@ export function useMonthlyComparison() {
 export function useWeeklyStats() {
   return useApi<WeeklyStats>(statsAPi.getWeeklyStats);
 }
-
-export function useWorkoutInstance(id: string) {
-  return useApi<any>(() => workoutApi.getInstance(id), { dependencies: [id] });
-}

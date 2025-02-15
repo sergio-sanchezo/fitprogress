@@ -1716,4 +1716,37 @@ export const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Poppins_600SemiBold",
   },
+
+  label: {
+    fontSize: 14,
+    fontFamily: "Poppins_400Regular",
+    color: "#666",
+    marginBottom: 4,
+  },
+
+  buttonGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
+  },
+
+  buttonActive: {
+    backgroundColor: "#4CAF50",
+  },
+
+  buttonTextActive: {
+    color: "#fff",
+  },
+
+  modalButtonGroup: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 16,
+  },
+
+  modalButton: {
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+  },
 });

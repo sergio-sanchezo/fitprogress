@@ -8,6 +8,15 @@ export interface Exercise {
   notes?: string;
 }
 
+export interface ICreateExercise {
+  name: string;
+  muscleGroup: string;
+  totalSets: number;
+  reps: number;
+  weight: number;
+  notes?: string;
+}
+
 export interface WorkoutSet {
   setNumber: number;
   reps: number;
@@ -26,6 +35,13 @@ export interface Workout {
   date: string;
   duration: number;
   completed?: boolean;
+}
+
+export interface ICreateWorkout {
+  name: string;
+  exercises: string[];
+  date: string;
+  duration: number;
 }
 
 export interface ProgressImage {

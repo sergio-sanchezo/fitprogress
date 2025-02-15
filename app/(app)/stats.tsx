@@ -1,8 +1,3 @@
-import {
-  useMonthlyComparison,
-  useWeeklyStats,
-  useWeightLogs,
-} from "@/hooks/useApi";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -14,45 +9,47 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { WeightChart } from "../../components/WeightChart";
+import { useMonthlyComparison, useWeeklyStats } from "@/hooks/useApi";
 import { styles } from "../../styles";
 
 export default function StatsScreen() {
-  // Fetch all required data
-  const {
-    data: weightLogs,
-    loading: loadingWeight,
-    error: weightError,
-    refresh: refreshWeight,
-  } = useWeightLogs();
-
+  // Fetch weekly stats and monthly comparison
   const {
     data: weeklyStats,
     loading: loadingWeekly,
+    error: weeklyError,
     refresh: refreshWeekly,
   } = useWeeklyStats();
 
   const {
     data: monthlyComparison,
     loading: loadingMonthly,
+    error: monthlyError,
     refresh: refreshMonthly,
   } = useMonthlyComparison();
 
-  // Combine all loading states
-  const isLoading = loadingWeight || loadingWeekly || loadingMonthly;
+  // Combine loading and error states
+  const isLoading = loadingWeekly || loadingMonthly;
+  const error = weeklyError || monthlyError;
 
-  // Combine refresh functions
+  // Combined refresh function
   const handleRefresh = React.useCallback(() => {
-    refreshWeight();
     refreshWeekly();
     refreshMonthly();
-  }, [refreshWeight, refreshWeekly, refreshMonthly]);
+  }, [refreshWeekly, refreshMonthly]);
 
-  if (weightError) {
+  // Helper to format duration (in minutes) as "Xh Ym"
+  const formatDuration = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hours}h ${remainingMinutes}m`;
+  };
+
+  if (error) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.centerContent}>
-          <Text style={styles.errorText}>Error: {weightError.message}</Text>
+          <Text style={styles.errorText}>Error: {error.message}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
             <Text style={styles.retryButtonText}>Reintentar</Text>
           </TouchableOpacity>
@@ -61,17 +58,11 @@ export default function StatsScreen() {
     );
   }
 
-  const formatDuration = (minutes: number) => {
-    const hours = Math.floor(minutes / 60);
-    const remainingMinutes = minutes % 60;
-    return `${hours}h ${remainingMinutes}m`;
-  };
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: 32 }]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
@@ -82,35 +73,18 @@ export default function StatsScreen() {
           />
         }
       >
-        <View style={styles.chartWrapper}>
-          <WeightChart logs={weightLogs || []} loading={loadingWeight} />
-        </View>
-
         {/* Workouts This Month */}
         <View style={styles.statCard}>
           <View style={styles.statHeader}>
             <Ionicons name="fitness" size={24} color="#4CAF50" />
             <Text style={styles.statTitle}>Entrenamientos Este Mes</Text>
           </View>
-
           {loadingMonthly ? (
             <ActivityIndicator size="small" color="#4CAF50" />
           ) : (
             <>
               <Text style={styles.statValue}>
                 {weeklyStats?.totalWorkouts || 0}
-              </Text>
-              <Text
-                style={[
-                  styles.statSubtext,
-                  (monthlyComparison?.workoutChange ?? 0) > 0
-                    ? styles.positiveChange
-                    : styles.negativeChange,
-                ]}
-              >
-                {(monthlyComparison?.workoutChange ?? 0) > 0 ? "+" : ""}
-                {(monthlyComparison?.workoutChange ?? 0).toFixed(1)}% comparado
-                con el mes anterior
               </Text>
             </>
           )}
@@ -122,7 +96,6 @@ export default function StatsScreen() {
             <Ionicons name="barbell" size={24} color="#4CAF50" />
             <Text style={styles.statTitle}>Peso Levantado Total</Text>
           </View>
-
           {loadingWeekly ? (
             <ActivityIndicator size="small" color="#4CAF50" />
           ) : (
@@ -141,7 +114,6 @@ export default function StatsScreen() {
             <Ionicons name="time" size={24} color="#4CAF50" />
             <Text style={styles.statTitle}>Tiempo Total Entrenando</Text>
           </View>
-
           {loadingWeekly ? (
             <ActivityIndicator size="small" color="#4CAF50" />
           ) : (

@@ -45,6 +45,7 @@ export default function MeasurementsScreen() {
         rightThigh: latestMeasurements.rightThigh,
         leftCalf: latestMeasurements.leftCalf,
         rightCalf: latestMeasurements.rightCalf,
+        date: new Date().toISOString(),
       }));
     }
   }, [latestMeasurements]);
